@@ -52,6 +52,15 @@ $stmt->close();
 <div class="container mt-4">
 
     <h2 class="mb-4">Thêm danh mục</h2>
+    <?php if ($error !== ''): ?>
+
+    <div class="alert alert-danger">
+        <?= htmlspecialchars($error) ?>
+    </div>
+
+<?php endif; ?>
+
+
    <?php if ($error !== ''): ?>
 
     <div class="alert alert-danger">
@@ -64,6 +73,7 @@ $stmt->close();
 
         <div class="mb-3">
             <label for="categoryName" class="form-label">
+                value="<?= htmlspecialchars($_POST['category_name'] ?? '') ?>"
                 Tên danh mục
             </label>
 
