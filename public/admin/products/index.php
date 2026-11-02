@@ -31,19 +31,19 @@ $sql = "
         p.ProductID
 ";
 
-$result = $conn->query($sql);
+$result = $connection->query($sql);
 
-require_once '/var/www/src/includes/header.php';
-require_once '/var/www/src/includes/navbar.php';
+require_once '/var/www/src/includes/admin/header.php';
+require_once '/var/www/src/includes/admin/navbar.php'; 
 
 ?>
 
-<div class="container mt-4">
+<div class="container">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>Quản lý sản phẩm</h2>
 
-        <a href="/products/create.php" class="btn btn-primary">
+        <a href="/admin/products/create.php" class="btn btn-primary">
             Thêm sản phẩm
         </a>
     </div>
@@ -54,8 +54,8 @@ require_once '/var/www/src/includes/navbar.php';
 
             <thead class="table-dark">
                 <tr>
-                    <th>Hình ảnh</th>
                     <th>Mã SP</th>
+                    <th>Hình ảnh</th>
                     <th>Tên sản phẩm</th>
                     <th>Danh mục</th>
                     <th>Nhà cung cấp</th>
@@ -66,26 +66,28 @@ require_once '/var/www/src/includes/navbar.php';
                     <th>Thao tác</th>
                 </tr>
             </thead>
-            
+
             <tbody>
 
             <?php while ($product = $result->fetch_assoc()): ?>
 
                 <tr>
-                <?php
-$imageFile = $product['ImageFile'] ?? '';
-$altText = $product['AltText'] ?? $product['ProductName'];
-?>
 
-<td>
-    <img
-        src="/uploads/products/<?= htmlspecialchars($imageFile) ?>"
-        alt="<?= htmlspecialchars($altText) ?>"
-        width="80"
-        class="img-thumbnail"
-    >
-</td>
                     <td><?= htmlspecialchars($product['ProductCode']) ?></td>
+
+                    <?php
+                        $imageFile = $product['ImageFile'] ?? '';
+                        $altText = $product['AltText'] ?? $product['ProductName'];
+                        ?>
+
+                        <td>
+                            <img
+                                src="/upload/products/<?= htmlspecialchars($imageFile) ?>"
+                                alt="<?= htmlspecialchars($altText) ?>"
+                                width="80"
+                                class="img-thumbnail"
+                            >
+                        </td>
 
                     <td><?= htmlspecialchars($product['ProductName']) ?></td>
 
@@ -125,29 +127,29 @@ $altText = $product['AltText'] ?? $product['ProductName'];
                     </td>
 
                     <td>
-                        <a href="/products/edit.php?id=<?= $product['ProductID'] ?>" class="btn btn-sm btn-warning">
+                        <a href="/admin/products/edit.php?id=<?= $product['ProductID'] ?>" class="btn btn-sm btn-warning">
                             Sửa
                         </a>
 
                         <form
-    action="/products/delete.php"
-    method="post"
-    class="d-inline"
-    onsubmit="return confirm('Bạn có chắc muốn xóa sản phẩm này?');"
->
-    <input
-        type="hidden"
-        name="id"
-        value="<?= $product['ProductID'] ?>"
-    >
+                            action="/admin/products/delete.php"
+                            method="post"
+                            class="d-inline"
+                            onsubmit="return confirm('Bạn có chắc muốn xóa sản phẩm này?');"
+                        >
+                            <input
+                                type="hidden"
+                                name="id"
+                                value="<?= $product['ProductID'] ?>"
+                            >
 
-    <button
-        type="submit"
-        class="btn btn-sm btn-danger"
-    >
-        Xóa
-    </button>
-</form>
+                            <button
+                                type="submit"
+                                class="btn btn-sm btn-danger"
+                            >
+                                Xóa
+                            </button>
+                        </form>
                     </td>
 
                 </tr>
@@ -164,6 +166,6 @@ $altText = $product['AltText'] ?? $product['ProductName'];
 
 <?php
 
-require_once '/var/www/src/includes/footer.php';
+require_once '/var/www/src/includes/admin/footer.php';
 
-$conn->close();
+$connection->close();

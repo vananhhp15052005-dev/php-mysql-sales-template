@@ -3,7 +3,7 @@
 require_once '/var/www/src/config/database.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: /categories/');
+    header('Location: /admin/categories/');
     exit;
 }
 
@@ -12,7 +12,7 @@ $categoryID = isset($_POST['id'])
     : 0;
 
 if ($categoryID <= 0) {
-    header('Location: /categories/');
+    header('Location: /admin/categories/');
     exit;
 }
 
@@ -21,13 +21,13 @@ $sql = "
     WHERE CategoryID = ?
 ";
 
-$stmt = $conn->prepare($sql);
+$stmt = $connection->prepare($sql);
 $stmt->bind_param('i', $categoryID);
 
 $stmt->execute();
 
 $stmt->close();
-$conn->close();
+$connection->close();
 
-header('Location: /categories/');
+header('Location: /admin/categories/');
 exit;

@@ -26,7 +26,11 @@ CREATE TABLE customers (
     Address VARCHAR(200),
     City VARCHAR(100),
     PostalCode VARCHAR(20),
-    Country VARCHAR(100)
+    Country VARCHAR(100),
+    Phone VARCHAR(20),
+    Email VARCHAR(255) NULL,
+    PasswordHash VARCHAR(255) NULL,
+    CONSTRAINT uq_customers_email UNIQUE (Email)
 ) CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
@@ -87,17 +91,27 @@ CREATE TABLE product_images (
 
 CREATE TABLE orders (
     OrderID INT AUTO_INCREMENT PRIMARY KEY,
-    OrderDate DATE NOT NULL,
+    OrderDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    TotalAmount DECIMAL(12,2) NOT NULL DEFAULT 0,
+    Status VARCHAR(30) NOT NULL DEFAULT 'Pending',
     CustomerID INT NOT NULL,
-    EmployeeID INT NOT NULL,
-    ShipperID INT NOT NULL,
+    EmployeeID INT,
+    ShipperID INT,
+
+    CONSTRAINT chk_orders_total
+        CHECK (TotalAmount >= 0),
 
     CONSTRAINT fk_orders_customer
-        FOREIGN KEY (CustomerID) REFERENCES customers(CustomerID),
+        FOREIGN KEY (CustomerID)
+        REFERENCES customers(CustomerID),
+
     CONSTRAINT fk_orders_employee
-        FOREIGN KEY (EmployeeID) REFERENCES employees(EmployeeID),
+        FOREIGN KEY (EmployeeID)
+        REFERENCES employees(EmployeeID),
+
     CONSTRAINT fk_orders_shipper
-        FOREIGN KEY (ShipperID) REFERENCES shippers(ShipperID)
+        FOREIGN KEY (ShipperID)
+        REFERENCES shippers(ShipperID)
 ) CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
@@ -116,5 +130,52 @@ CREATE TABLE orderdetail (
         ON DELETE CASCADE,
     CONSTRAINT fk_orderdetail_product
         FOREIGN KEY (ProductID) REFERENCES products(ProductID)
+) CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE purchases (
+    PurchaseID INT AUTO_INCREMENT PRIMARY KEY,
+    PurchaseDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    TotalAmount DECIMAL(12,2) NOT NULL DEFAULT 0,
+    Status VARCHAR(30) NOT NULL DEFAULT 'Completed',
+    Note TEXT,
+    SupplierID INT NOT NULL,
+    EmployeeID INT,
+ 
+    CONSTRAINT chk_purchases_total
+        CHECK (TotalAmount >= 0),
+ 
+    CONSTRAINT fk_purchases_supplier
+        FOREIGN KEY (SupplierID)
+        REFERENCES suppliers(SupplierID),
+ 
+    CONSTRAINT fk_purchases_employee
+        FOREIGN KEY (EmployeeID)
+        REFERENCES employees(EmployeeID)
+) CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+ 
+-- =====================================================
+-- CHI TIẾT PHIẾU NHẬP
+-- UnitCost = giá nhập của 1 đơn vị tại thời điểm nhập
+-- =====================================================
+CREATE TABLE purchasedetail (
+    PurchaseDetailID INT AUTO_INCREMENT PRIMARY KEY,
+    Quantity INT NOT NULL,
+    UnitCost DECIMAL(12,2) NOT NULL,
+    PurchaseID INT NOT NULL,
+    ProductID INT NOT NULL,
+ 
+    CONSTRAINT chk_purchasedetail_quantity CHECK (Quantity > 0),
+    CONSTRAINT chk_purchasedetail_unitcost CHECK (UnitCost >= 0),
+ 
+    CONSTRAINT fk_purchasedetail_purchase
+        FOREIGN KEY (PurchaseID)
+        REFERENCES purchases(PurchaseID)
+        ON DELETE CASCADE,
+ 
+    CONSTRAINT fk_purchasedetail_product
+        FOREIGN KEY (ProductID)
+        REFERENCES products(ProductID)
 ) CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;

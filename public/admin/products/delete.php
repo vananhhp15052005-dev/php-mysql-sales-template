@@ -21,19 +21,19 @@ $sql = "
     WHERE ProductID = ?
 ";
 
-$stmt = $conn->prepare($sql);
+$stmt = $connection->prepare($sql);
 $stmt->bind_param('i', $productID);
 
 if ($stmt->execute()) {
 
     $stmt->close();
-    $conn->close();
+    $connection->close();
 
     header('Location: /products/');
     exit;
 }
 
 $stmt->close();
-$conn->close();
+$connection->close();
 
 die('Không thể xóa sản phẩm.');
